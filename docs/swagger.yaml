@@ -1,0 +1,303 @@
+basePath: /
+definitions:
+  handler.reqCost:
+    properties:
+      end_date:
+        type: string
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  handler.reqCreate:
+    properties:
+      end_date:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.Subscription:
+    properties:
+      end_date:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления подписками
+  title: Subscription API
+  version: "1.0"
+paths:
+  /subscription:
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую подписку для пользователя
+      parameters:
+      - description: Данные подписки
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.reqCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное создание, возвращает ID подписки
+          schema:
+            properties:
+              res:
+                type: string
+              uuid:
+                type: string
+            type: object
+        "400":
+          description: 'Некорректные данные: invalid input body'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: 'Внутренняя ошибка сервера: internal error'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Создать подписку
+      tags:
+      - subscriptions
+  /subscription/{id}:
+    delete:
+      description: Удаляет подписку по её ID
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное удаление
+          schema:
+            properties:
+              res:
+                type: string
+            type: object
+        "400":
+          description: 'Некорректный ID подписки: invalid input body'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: 'Внутренняя ошибка сервера: internal error'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Удалить подписку
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные подписки по ID. Принимает JSON с данными подписки.
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Обновляемые данные подписки
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.reqCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное обновление
+          schema:
+            properties:
+              res:
+                type: string
+            type: object
+        "400":
+          description: 'Некорректные данные: invalid input body'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: 'Внутренняя ошибка сервера: internal error'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Обновить подписку
+      tags:
+      - subscriptions
+  /subscription/{user_id}:
+    get:
+      description: 'Возвращает список подписок пользователя с пагинацией. Если page
+        или limit не указаны, используются значения по умолчанию: page=1, limit=10.'
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список подписок с пагинацией
+          schema:
+            properties:
+              res:
+                type: string
+              subscriptions:
+                items:
+                  $ref: '#/definitions/models.Subscription'
+                type: array
+            type: object
+        "400":
+          description: 'Некорректный ID пользователя: invalid input body'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: 'Внутренняя ошибка сервера: internal error'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Получить подписки пользователя
+      tags:
+      - subscriptions
+  /subscription/{user_id}/{page}/{limit}:
+    get:
+      description: 'Возвращает список подписок пользователя с пагинацией. Если page
+        или limit не указаны, используются значения по умолчанию: page=1, limit=10.'
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Номер страницы
+        in: path
+        name: page
+        type: integer
+      - description: Количество записей на страницу
+        in: path
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список подписок с пагинацией
+          schema:
+            properties:
+              res:
+                type: string
+              subscriptions:
+                items:
+                  $ref: '#/definitions/models.Subscription'
+                type: array
+            type: object
+        "400":
+          description: 'Некорректный ID пользователя: invalid input body'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: 'Внутренняя ошибка сервера: internal error'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Получить подписки пользователя
+      tags:
+      - subscriptions
+  /subscription/cost:
+    post:
+      consumes:
+      - application/json
+      description: Рассчитывает общую стоимость подписок пользователя за указанный
+        период
+      parameters:
+      - description: Параметры расчёта стоимости
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.reqCost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный расчёт, возвращает стоимость
+          schema:
+            properties:
+              cost:
+                type: number
+              res:
+                type: string
+            type: object
+        "400":
+          description: 'Некорректные данные: invalid input body'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "500":
+          description: 'Внутренняя ошибка сервера: internal error'
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Рассчитать стоимость подписок
+      tags:
+      - subscriptions
+schemes:
+- http
+swagger: "2.0"
